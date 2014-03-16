@@ -3,67 +3,63 @@ package dijkstra
 import "github.com/ichinaski/dijkstra/pqueue"
 
 /**
- * Node ID, representing its position within the Graph
+ * NodeId represents a position within the Graph.
  * Note: This type must be comparable - http://golang.org/ref/spec#Comparison_operators
  */
-type Position interface{}
+type NodeId interface{}
 
 type State struct {
-    id Position
-    parentId Position
-    cost int
+    nodeId NodeId
+    parentId NodeId
 }
 
 type Graph interface {
-    GetChildren(position Position) map[Position]int
-    GetHeuristicCost(position, goal Position) int
+    GetChildren(nodeId NodeId) map[NodeId]int
 }
 
 /**
- * A Star implementation
+ * Disjktra implementation
  */
-func FindPath(graph Graph, start, goal Position) []Position {
+func FindPath(graph Graph, start, goal NodeId) []NodeId {
     openList := &pqueue.PQueue{}// Nodes not visited yet
-    closedList := make(map[Position]Position)// Visited nodes, and their parents
+    closedList := make(map[NodeId]NodeId)// Visited nodes, and their parents
 
-    state := &State { start, nil, 0 }
+    state := &State { start, nil }
     openList.Push(state, 0)
 
     found := false
     for openList.Len() > 0 {
-        item, _ := openList.Pop()
+        item, cost := openList.Pop()
         state = item.(*State)
 
-        position, cost := state.id, state.cost
+        // Only consider non expanded nodes (not present in closedList)
+        if _, ok := closedList[state.nodeId]; !ok {
+            // Store this node in the closed list, with a reference to its parent
+            closedList[state.nodeId] = state.parentId
 
-        // Only consider non expanded positions (not present in closedList)
-        if _, ok := closedList[position]; !ok {
-            // Store this position in the closed list, with a reference to its parent
-            closedList[position] = state.parentId
-
-            if position == goal {
+            if state.nodeId == goal {
                 found = true
                 break
             }
 
-            // Add the positions that are not in the closed list yet
-            children := graph.GetChildren(position)
-            for childPosition := range children {
-                if _, ok := closedList[childPosition]; !ok {
-                    childState := &State { childPosition, position, cost + children[childPosition] }
-                    openList.Push(childState, childState.cost + graph.GetHeuristicCost(childPosition, goal))
+            // Add the nodes not present in the closedList into the openList
+            children := graph.GetChildren(state.nodeId)
+            for childId, childCost := range children {
+                if _, ok := closedList[childId]; !ok {
+                    childState := &State { childId, state.nodeId }
+                    openList.Push(childState, cost + childCost)
                 }
             }
         }
     }
 
     // Build the path, fetching all the nodes in a descendant way, from goal to start
-    path := make([]Position, 0, len(closedList))
+    path := make([]NodeId, 0, len(closedList))
     if found {
-        position := goal
-        for position != nil {
-            path = append(path, position)
-            position = closedList[position]
+        nodeId := goal
+        for nodeId != nil {
+            path = append(path, nodeId)
+            nodeId = closedList[nodeId]
         }
 
         // Reverse the slice

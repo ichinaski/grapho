@@ -11,10 +11,10 @@ type MyGraph struct {
     nodes map[int]map[int]int
 }
 
-func (g MyGraph) GetChildren(position Position) map[Position]int {
-    children := make(map[Position]int)
+func (g MyGraph) GetChildren(nodeId NodeId) map[NodeId]int {
+    children := make(map[NodeId]int)
 
-    if vertices, ok := g.nodes[position.(int)]; ok {
+    if vertices, ok := g.nodes[nodeId.(int)]; ok {
         for vertex, cost := range vertices {
             children[vertex] = cost
         }
@@ -23,12 +23,8 @@ func (g MyGraph) GetChildren(position Position) map[Position]int {
     return children
 }
 
-func (g MyGraph) GetHeuristicCost(position, goal Position) int {
-    return 0
-}
-
 // equalPath compares the given path with the expected path
-func equalPath(s1, s2 []Position) bool {
+func equalPath(s1, s2 []NodeId) bool {
     if len(s1) != len(s2) {
         return false
     }
@@ -58,14 +54,14 @@ func TestFindPath(t *testing.T) {
     }
 
     path := FindPath(g, 1, 5)
-    expected := []Position{1, 2, 4, 5}
+    expected := []NodeId{1, 2, 4, 5}
 
     if !equalPath(path, expected) {
         t.Errorf("Path: %v. Expected: %v", path, expected)
     }
 
     path = FindPath(g, 1, 6)
-    expected = []Position{}
+    expected = []NodeId{}
 
     if !equalPath(path, expected) {
         t.Errorf("Path: %v. Expected: %v", path, expected)
