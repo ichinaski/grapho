@@ -27,24 +27,19 @@ func (g MyGraph) GetHeuristicCost(position, goal Position) int {
     return 0
 }
 
-/**
- * Compare the given path with the expected path
- * TODO: Check for a better way of comparing the slices and their
- * respective type assertions ([]Position is not []int)
- */
-func equalPath(s1 []Position, s2 []int) bool {
+// equalPath compares the given path with the expected path
+func equalPath(s1, s2 []Position) bool {
     if len(s1) != len(s2) {
         return false
     }
 
     for i := 0; i < len(s1); i++ {
-        if s1[i].(int) != s2[i] {
+        if s1[i] != s2[i] {
             return false
         }
     }
 
     return true
-
 }
 
 /**
@@ -63,14 +58,14 @@ func TestFindPath(t *testing.T) {
     }
 
     path := FindPath(g, 1, 5)
-    expected := []int{1, 2, 4, 5}
+    expected := []Position{1, 2, 4, 5}
 
     if !equalPath(path, expected) {
         t.Errorf("Path: %v. Expected: %v", path, expected)
     }
 
     path = FindPath(g, 1, 6)
-    expected = []int{}
+    expected = []Position{}
 
     if !equalPath(path, expected) {
         t.Errorf("Path: %v. Expected: %v", path, expected)

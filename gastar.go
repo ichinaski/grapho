@@ -26,13 +26,13 @@ func FindPath(graph Graph, start, goal Position) []Position {
     openList := &pqueue.PQueue{}// Nodes not visited yet
     closedList := make(map[Position]Position)// Visited nodes, and their parents
 
-    state := State { start, nil, 0 }
+    state := &State { start, nil, 0 }
     openList.Push(state, 0)
 
     found := false
     for openList.Len() > 0 {
         item, _ := openList.Pop()
-        state = item.(State)
+        state = item.(*State)
 
         position, cost := state.id, state.cost
 
@@ -50,7 +50,7 @@ func FindPath(graph Graph, start, goal Position) []Position {
             children := graph.GetChildren(position)
             for childPosition := range children {
                 if _, ok := closedList[childPosition]; !ok {
-                    childState := State { childPosition, position, cost + children[childPosition] }
+                    childState := &State { childPosition, position, cost + children[childPosition] }
                     openList.Push(childState, childState.cost + graph.GetHeuristicCost(childPosition, goal))
                 }
             }
