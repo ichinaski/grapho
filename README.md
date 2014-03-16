@@ -1,4 +1,4 @@
-gastar
-======
+dijkstra
+========
 
-Go implementation of the A* algorithm
+Go implementation of the Dijkstra algorithm

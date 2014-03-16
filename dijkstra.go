@@ -1,6 +1,6 @@
-package gastar
+package dijkstra
 
-import "github.com/ichinaski/gastar/pqueue"
+import "github.com/ichinaski/dijkstra/pqueue"
 
 /**
  * Node ID, representing its position within the Graph

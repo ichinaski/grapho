@@ -1,4 +1,4 @@
-package gastar
+package dijkstra
 
 import "testing"
 
