@@ -39,11 +39,11 @@ func equalPath(s1, s2 []NodeId) bool {
 }
 
 /**
- * Test FindPath with a simple graph containing 5 vertices.
+ * Test Dijkstra with a simple graph containing 5 vertices.
  * TODO: Read the graph from a file, allowing much larger graphs
  * to be tested.
  */
-func TestFindPath(t *testing.T) {
+func TestDijkstra(t *testing.T) {
     g := MyGraph {
         nodes: map[int]map[int]int {
             1: map[int]int { 2: 1, 3: 1, 5: 4},
@@ -53,14 +53,14 @@ func TestFindPath(t *testing.T) {
         },
     }
 
-    path := FindPath(g, 1, 5)
+    path := Dijkstra(g, 1, 5)
     expected := []NodeId{1, 2, 4, 5}
 
     if !equalPath(path, expected) {
         t.Errorf("Path: %v. Expected: %v", path, expected)
     }
 
-    path = FindPath(g, 1, 6)
+    path = Dijkstra(g, 1, 6)
     expected = []NodeId{}
 
     if !equalPath(path, expected) {

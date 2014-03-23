@@ -8,19 +8,19 @@ import "github.com/ichinaski/dijkstra/pqueue"
  */
 type NodeId interface{}
 
+type Graph interface {
+    GetChildren(nodeId NodeId) map[NodeId]int
+}
+
 type State struct {
     nodeId NodeId
     parentId NodeId
 }
 
-type Graph interface {
-    GetChildren(nodeId NodeId) map[NodeId]int
-}
-
 /**
  * Disjktra implementation
  */
-func FindPath(graph Graph, start, goal NodeId) []NodeId {
+func Dijkstra(graph Graph, start, goal NodeId) []NodeId {
     openList := &pqueue.PQueue{}// Nodes not visited yet
     closedList := make(map[NodeId]NodeId)// Visited nodes, and their parents
 
