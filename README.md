@@ -1,4 +1,8 @@
-dijkstra
-========
+graph-utils
+===========
 
-Go implementation of the Dijkstra algorithm
+Go implementation of graph theory algorithms
+
+### Algorithms:
+* Dijkstra (uniform cost search)
+* A* (best-first search with heuristic)
