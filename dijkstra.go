@@ -1,6 +1,6 @@
 package dijkstra
 
-import "github.com/ichinaski/dijkstra/pqueue"
+import "github.com/ichinaski/dijkstra/container"
 
 /**
  * NodeId represents a position within the Graph.
@@ -15,21 +15,33 @@ type Graph interface {
 type State struct {
     nodeId NodeId
     parentId NodeId
+    cost int
+}
+
+// A heuristic returns the estimated cost from the given node to the goal node
+type heuristic func(node, goal NodeId) int
+
+// nullHeuristic just returns 0 for any node pair. If used with a priority queue,
+// the search will compute a uniform cost search (Dijkstra)
+func nullHeuristic(node, goal NodeId) int {
+    return 0
 }
 
 /**
  * Disjktra implementation
  */
-func Dijkstra(graph Graph, start, goal NodeId) []NodeId {
-    openList := &pqueue.PQueue{}// Nodes not visited yet
+func Dijkstra(graph Graph, start, goal NodeId, hCost heuristic) []NodeId {
+    if hCost == nil { hCost = nullHeuristic }
+
+    openList := &container.PQueue{}// Nodes not visited yet
     closedList := make(map[NodeId]NodeId)// Visited nodes, and their parents
 
-    state := &State { start, nil }
+    state := &State { start, nil, 0}
     openList.Push(state, 0)
 
     found := false
     for openList.Len() > 0 {
-        item, cost := openList.Pop()
+        item, _ := openList.Pop()
         state = item.(*State)
 
         // Only consider non expanded nodes (not present in closedList)
@@ -46,8 +58,8 @@ func Dijkstra(graph Graph, start, goal NodeId) []NodeId {
             children := graph.GetChildren(state.nodeId)
             for childId, childCost := range children {
                 if _, ok := closedList[childId]; !ok {
-                    childState := &State { childId, state.nodeId }
-                    openList.Push(childState, cost + childCost)
+                    childState := &State { childId, state.nodeId, state.cost + childCost}
+                    openList.Push(childState, childState.cost + hCost(childId, goal))
                 }
             }
         }

@@ -1,4 +1,4 @@
-package pqueue
+package container
 
 type entry struct {
     item interface{}

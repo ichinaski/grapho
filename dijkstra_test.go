@@ -53,15 +53,45 @@ func TestDijkstra(t *testing.T) {
         },
     }
 
-    path := Dijkstra(g, 1, 5)
+    path := Dijkstra(g, 1, 5, nil)
     expected := []NodeId{1, 2, 4, 5}
 
     if !equalPath(path, expected) {
         t.Errorf("Path: %v. Expected: %v", path, expected)
     }
 
-    path = Dijkstra(g, 1, 6)
+    path = Dijkstra(g, 1, 6, nil)
     expected = []NodeId{}
+
+    if !equalPath(path, expected) {
+        t.Errorf("Path: %v. Expected: %v", path, expected)
+    }
+}
+
+/**
+ * Test Dijkstra with a simple graph containing 5 vertices.
+ * TODO: Read the graph from a file, allowing much larger graphs
+ * to be tested.
+ */
+func TestAStar(t *testing.T) {
+    g := MyGraph {
+        nodes: map[int]map[int]int {
+            1: map[int]int { 2: 1, 3: 1, 5: 4},
+            2: map[int]int { 4: 1 },
+            3: map[int]int { 4: 1 },
+            4: map[int]int { 5: 1 },
+        },
+    }
+
+    h := func(node, goal NodeId) int {
+        if node.(int) == 5 {
+            return 0
+        }
+        return 5
+    }
+
+    path := Dijkstra(g, 1, 5, h)
+    expected := []NodeId{1, 5}
 
     if !equalPath(path, expected) {
         t.Errorf("Path: %v. Expected: %v", path, expected)
