@@ -1,4 +1,4 @@
-package dijkstra
+package search
 
 import "github.com/ichinaski/dijkstra/container"
 
@@ -27,10 +27,13 @@ func nullHeuristic(node, goal NodeId) int {
     return 0
 }
 
-/**
- * Disjktra implementation
- */
-func Dijkstra(graph Graph, start, goal NodeId, hCost heuristic) []NodeId {
+// Dijkstra (uniform cost search)
+func Dijkstra(graph Graph, start, goal NodeId) []NodeId {
+    return Search(graph, start, goal, nullHeuristic)
+}
+
+// Generic Search
+func Search(graph Graph, start, goal NodeId, hCost heuristic) []NodeId {
     if hCost == nil { hCost = nullHeuristic }
 
     openList := &container.PQueue{}// Nodes not visited yet

@@ -1,4 +1,4 @@
-package dijkstra
+package search
 
 import "testing"
 
@@ -53,14 +53,14 @@ func TestDijkstra(t *testing.T) {
         },
     }
 
-    path := Dijkstra(g, 1, 5, nil)
+    path := Dijkstra(g, 1, 5)
     expected := []NodeId{1, 2, 4, 5}
 
     if !equalPath(path, expected) {
         t.Errorf("Path: %v. Expected: %v", path, expected)
     }
 
-    path = Dijkstra(g, 1, 6, nil)
+    path = Dijkstra(g, 1, 6)
     expected = []NodeId{}
 
     if !equalPath(path, expected) {
@@ -69,9 +69,7 @@ func TestDijkstra(t *testing.T) {
 }
 
 /**
- * Test Dijkstra with a simple graph containing 5 vertices.
- * TODO: Read the graph from a file, allowing much larger graphs
- * to be tested.
+ * Test A* with a simple graph containing 5 vertices.
  */
 func TestAStar(t *testing.T) {
     g := MyGraph {
@@ -90,7 +88,7 @@ func TestAStar(t *testing.T) {
         return 5
     }
 
-    path := Dijkstra(g, 1, 5, h)
+    path := Search(g, 1, 5, h)
     expected := []NodeId{1, 5}
 
     if !equalPath(path, expected) {
