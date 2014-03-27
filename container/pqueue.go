@@ -33,7 +33,7 @@ func (h *PQueue) Push(item interface{}, priority int) {
     }
 }
 
-func (h *PQueue) Pop() (interface{}, int) {
+func (h *PQueue) Pop() interface{} {
     size := h.Len()
 
     // Move last leaf to root
@@ -64,5 +64,5 @@ func (h *PQueue) Pop() (interface{}, int) {
         }
     }
 
-    return entry.item, entry.priority
+    return entry.item
 }

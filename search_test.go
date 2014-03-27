@@ -1,6 +1,9 @@
 package search
 
-import "testing"
+import (
+    "testing"
+    "sort"
+)
 
 /**
  * struct that implements Graph interface.
@@ -11,16 +14,22 @@ type MyGraph struct {
     nodes map[int]map[int]int
 }
 
-func (g MyGraph) GetChildren(nodeId NodeId) map[NodeId]int {
-    children := make(map[NodeId]int)
+func (g MyGraph) GetEdges(nodeId NodeId) []Edge {
+    var edges []Edge
 
     if vertices, ok := g.nodes[nodeId.(int)]; ok {
-        for vertex, cost := range vertices {
-            children[vertex] = cost
+        // Sort vertices, to queue them ordered in the slice
+        var keys []int
+        for k := range vertices {
+            keys = append(keys, k)
+        }
+        sort.Ints(keys)
+        for _, k := range keys {
+            edges = append(edges, Edge { k, vertices[k] })
         }
     }
 
-    return children
+    return edges
 }
 
 // equalPath compares the given path with the expected path
@@ -69,27 +78,91 @@ func TestDijkstra(t *testing.T) {
 }
 
 /**
- * Test A* with a simple graph containing 5 vertices.
+ * Test Astar with a simple 3x3 grid and an heuristic that
+ * assigns more priority to numbers closer to 9
  */
 func TestAStar(t *testing.T) {
+    //  1  2  4
+    //  3  5  7
+    //  6  8  9
     g := MyGraph {
         nodes: map[int]map[int]int {
-            1: map[int]int { 2: 1, 3: 1, 5: 4},
-            2: map[int]int { 4: 1 },
-            3: map[int]int { 4: 1 },
-            4: map[int]int { 5: 1 },
+            1: map[int]int { 2: 1, 3: 1},
+            2: map[int]int { 1: 1, 4:1, 5:1 },
+            3: map[int]int { 1: 1, 5:1, 6:1 },
+            4: map[int]int { 2: 1, 7:1 },
+            5: map[int]int { 2: 1, 3:1, 7:1, 8:1 },
+            6: map[int]int { 3: 1, 8:1 },
+            7: map[int]int { 4: 1, 5:1, 9:1 },
+            8: map[int]int { 5: 1, 6:1, 9:1 },
+            9: map[int]int { 7: 1, 8:1 },
         },
     }
 
     h := func(node, goal NodeId) int {
-        if node.(int) == 5 {
-            return 0
-        }
-        return 5
+        return goal.(int) - node.(int)
     }
 
-    path := Search(g, 1, 5, h)
-    expected := []NodeId{1, 5}
+    path := Astar(g, 1, 9, h)
+    expected := []NodeId{1, 3, 6, 8, 9}
+
+    if !equalPath(path, expected) {
+        t.Errorf("Path: %v. Expected: %v", path, expected)
+    }
+}
+
+/**
+ * Test BreathFirstSearch with a simple 3x3 grid
+ */
+func TestBreathFirstSearch(t *testing.T) {
+    //  1  2  4
+    //  3  5  7
+    //  6  8  9
+    g := MyGraph {
+        nodes: map[int]map[int]int {
+            1: map[int]int { 2: 1, 3: 1},
+            2: map[int]int { 1: 1, 4:1, 5:1 },
+            3: map[int]int { 1: 1, 5:1, 6:1 },
+            4: map[int]int { 2: 1, 7:1 },
+            5: map[int]int { 2: 1, 3:1, 7:1, 8:1 },
+            6: map[int]int { 3: 1, 8:1 },
+            7: map[int]int { 4: 1, 5:1, 9:1 },
+            8: map[int]int { 5: 1, 6:1, 9:1 },
+            9: map[int]int { 7: 1, 8:1 },
+        },
+    }
+
+    path := BreathFirstSearch(g, 1, 9)
+    expected := []NodeId{1, 2, 4, 7, 9}
+
+    if !equalPath(path, expected) {
+        t.Errorf("Path: %v. Expected: %v", path, expected)
+    }
+}
+
+/**
+ * Test DepthFirstSearch with a simple 3x3 grid
+ */
+func TestDepthFirstSearch(t *testing.T) {
+    //  1  2  4
+    //  3  5  7
+    //  6  8  9
+    g := MyGraph {
+        nodes: map[int]map[int]int {
+            1: map[int]int { 2: 1, 3: 1},
+            2: map[int]int { 1: 1, 4:1, 5:1 },
+            3: map[int]int { 1: 1, 5:1, 6:1 },
+            4: map[int]int { 2: 1, 7:1 },
+            5: map[int]int { 2: 1, 3:1, 7:1, 8:1 },
+            6: map[int]int { 3: 1, 8:1 },
+            7: map[int]int { 4: 1, 5:1, 9:1 },
+            8: map[int]int { 5: 1, 6:1, 9:1 },
+            9: map[int]int { 7: 1, 8:1 },
+        },
+    }
+
+    path := DepthFirstSearch(g, 1, 9)
+    expected := []NodeId{1, 2, 4, 7, 5, 3, 6, 8, 9}
 
     if !equalPath(path, expected) {
         t.Errorf("Path: %v. Expected: %v", path, expected)
