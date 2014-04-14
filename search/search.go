@@ -1,6 +1,9 @@
 package search
 
-import "github.com/ichinaski/graph-utils/container"
+import (
+    "github.com/ichinaski/graph-utils/container"
+    "github.com/ichinaski/graph-utils/graph"
+)
 
 const (
     type_bfs = iota
@@ -9,27 +12,11 @@ const (
     type_astar
 )
 
-// NodeId represents a position within the Graph.
-// Note: This type must be comparable - http://golang.org/ref/spec#Comparison_operators
-type NodeId interface{}
-
-type Graph interface {
-    GetEdges(nodeId NodeId) []Edge
-}
-
-// Edge represents a relationship for a particular node
-// It contains the NodeId of the successor and the cost to reach it
-type Edge struct {
-    nodeId NodeId
-    cost int
-}
-
 // State is a graph position for which its ancestors have been evaluated.
-// Contains the nodeId, its parent NodeId, and the total cost of traversing 
+// Contains the nodeId, its parent int, and the total cost of traversing 
 // the graph to reach this position
 type State struct {
-    nodeId NodeId
-    parentId NodeId
+    nodeId, parentId int
     cost int
 }
 
@@ -50,27 +37,27 @@ type OpenStack struct { *container.Stack }
 func (s *OpenStack) Push(item interface{}, priority int) { s.Stack.Push(item) }
 
 // Heuristic calculates the estimated cost between two nodes
-type Heuristic func(node, goal NodeId) int
+type Heuristic func(node, goal int) int
 
-func NullHeuristic(node, goal NodeId) int { return 0 }
+func NullHeuristic(node, goal int) int { return 0 }
 
-func BreathFirstSearch(graph Graph, start, goal NodeId) []NodeId {
+func BreathFirstSearch(graph graph.Graph, start, goal int) []int {
     return search(graph, start, goal, type_bfs, nil)
 }
 
-func DepthFirstSearch(graph Graph, start, goal NodeId) []NodeId {
+func DepthFirstSearch(graph graph.Graph, start, goal int) []int {
     return search(graph, start, goal, type_dfs, nil)
 }
 
-func Dijkstra(graph Graph, start, goal NodeId) []NodeId {
+func Dijkstra(graph graph.Graph, start, goal int) []int {
     return search(graph, start, goal, type_dijkstra, nil)
 }
 
-func Astar(graph Graph, start, goal NodeId, heuristic Heuristic) []NodeId {
+func Astar(graph graph.Graph, start, goal int, heuristic Heuristic) []int {
     return search(graph, start, goal, type_astar, heuristic)
 }
 
-func search(graph Graph, start, goal NodeId, search_type uint, heuristic Heuristic) []NodeId {
+func search(graph graph.Graph, start, goal int, search_type uint, heuristic Heuristic) []int {
     if heuristic == nil { heuristic = NullHeuristic }
 
     // Initialize the open set, according to the type of search passed in
@@ -84,12 +71,12 @@ func search(graph Graph, start, goal NodeId, search_type uint, heuristic Heurist
             openSet = &container.PQueue{}// Priority queue if Dijkstra or A*
     }
 
-    closedSet := make(map[NodeId]NodeId)// Visited nodes, with a reference to their direct ancestor
+    closedSet := make(map[int]int)// Visited nodes, with a reference to their direct ancestor
 
-    state := &State { start, nil, 0}
+    state := &State { start, 0, 0}
     openSet.Push(state, 0)
 
-    var path []NodeId
+    var path []int
     for openSet.Len() > 0 {
         item := openSet.Pop()
         state = item.(*State)
@@ -116,9 +103,9 @@ func search(graph Graph, start, goal NodeId, search_type uint, heuristic Heurist
             }
 
             for _, edge := range edges {
-                if _, ok := closedSet[edge.nodeId]; !ok {
-                    nextState := &State { edge.nodeId, state.nodeId, state.cost + edge.cost}
-                    openSet.Push(nextState, nextState.cost + heuristic(edge.nodeId, goal))
+                if _, ok := closedSet[edge.NodeId]; !ok {
+                    nextState := &State { edge.NodeId, state.nodeId, state.cost + edge.Cost}
+                    openSet.Push(nextState, nextState.cost + heuristic(edge.NodeId, goal))
                 }
             }
         }
@@ -127,11 +114,11 @@ func search(graph Graph, start, goal NodeId, search_type uint, heuristic Heurist
     return path
 }
 
-func calculatePath(start, goal NodeId, closedSet map[NodeId]NodeId) []NodeId {
-    path := make([]NodeId, 0, len(closedSet))
+func calculatePath(start, goal int, closedSet map[int]int) []int {
+    path := make([]int, 0, len(closedSet))
     // fetch all the nodes in a descendant way, from goal to start
     nodeId := goal
-    for nodeId != nil {
+    for nodeId != 0 {
         path = append(path, nodeId)
         nodeId = closedSet[nodeId]
     }
