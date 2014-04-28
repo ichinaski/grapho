@@ -1,6 +1,7 @@
 package search
 
 import (
+    "errors"
     "github.com/ichinaski/graph-utils/container"
     "github.com/ichinaski/graph-utils/graph"
 )
@@ -41,23 +42,23 @@ type Heuristic func(node, goal int) int
 
 func NullHeuristic(node, goal int) int { return 0 }
 
-func BreathFirstSearch(graph graph.Graph, start, goal int) []int {
+func BreathFirstSearch(graph graph.Graph, start, goal int) ([]int, error) {
     return search(graph, start, goal, type_bfs, nil)
 }
 
-func DepthFirstSearch(graph graph.Graph, start, goal int) []int {
+func DepthFirstSearch(graph graph.Graph, start, goal int) ([]int, error) {
     return search(graph, start, goal, type_dfs, nil)
 }
 
-func Dijkstra(graph graph.Graph, start, goal int) []int {
+func Dijkstra(graph graph.Graph, start, goal int) ([]int, error) {
     return search(graph, start, goal, type_dijkstra, nil)
 }
 
-func Astar(graph graph.Graph, start, goal int, heuristic Heuristic) []int {
+func Astar(graph graph.Graph, start, goal int, heuristic Heuristic) ([]int, error) {
     return search(graph, start, goal, type_astar, heuristic)
 }
 
-func search(graph graph.Graph, start, goal int, search_type uint, heuristic Heuristic) []int {
+func search(graph graph.Graph, start, goal int, search_type uint, heuristic Heuristic) ([]int, error) {
     if heuristic == nil { heuristic = NullHeuristic }
 
     // Initialize the open set, according to the type of search passed in
@@ -76,7 +77,6 @@ func search(graph graph.Graph, start, goal int, search_type uint, heuristic Heur
     state := &State { start, 0, 0}
     openSet.Push(state, 0)
 
-    var path []int
     for openSet.Len() > 0 {
         item := openSet.Pop()
         state = item.(*State)
@@ -87,8 +87,7 @@ func search(graph graph.Graph, start, goal int, search_type uint, heuristic Heur
             closedSet[state.nodeId] = state.parentId
 
             if state.nodeId == goal {
-                path = calculatePath(start, goal, closedSet)
-                break
+                return calculatePath(start, goal, closedSet), nil
             }
 
             // Add the nodes not present in the closedSet into the openSet
@@ -111,7 +110,7 @@ func search(graph graph.Graph, start, goal int, search_type uint, heuristic Heur
         }
     }
 
-    return path
+    return nil, errors.New("Path not found")
 }
 
 func calculatePath(start, goal int, closedSet map[int]int) []int {

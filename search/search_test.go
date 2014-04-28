@@ -31,18 +31,19 @@ func TestDijkstra(t *testing.T) {
         },
     }
 
-    path := Dijkstra(g, 1, 5)
     expected := []int{1, 2, 4, 5}
 
+    path, err := Dijkstra(g, 1, 5)
+    if err != nil {
+        t.Fatalf("Dijkstra: %v", err)
+    }
     if !equalPath(path, expected) {
         t.Errorf("Path: %v. Expected: %v", path, expected)
     }
 
-    path = Dijkstra(g, 1, 6)
-    expected = []int{}
-
-    if !equalPath(path, expected) {
-        t.Errorf("Path: %v. Expected: %v", path, expected)
+    path, err = Dijkstra(g, 1, 6)
+    if err == nil {
+        t.Error("Dijkstra: Did not get expected error")
     }
 }
 
@@ -70,9 +71,12 @@ func TestAStar(t *testing.T) {
         return goal - node
     }
 
-    path := Astar(g, 1, 9, h)
-    expected := []int{1, 3, 6, 8, 9}
+    path, err := Astar(g, 1, 9, h)
+    if err != nil {
+        t.Fatalf("Astar: %v", err)
+    }
 
+    expected := []int{1, 3, 6, 8, 9}
     if !equalPath(path, expected) {
         t.Errorf("Path: %v. Expected: %v", path, expected)
     }
@@ -97,9 +101,12 @@ func TestBreathFirstSearch(t *testing.T) {
         },
     }
 
-    path := BreathFirstSearch(g, 1, 9)
-    expected := []int{1, 2, 4, 7, 9}
+    path, err := BreathFirstSearch(g, 1, 9)
+    if err != nil {
+        t.Fatalf("BreathFirstSearch: %v", err)
+    }
 
+    expected := []int{1, 2, 4, 7, 9}
     if !equalPath(path, expected) {
         t.Errorf("Path: %v. Expected: %v", path, expected)
     }
@@ -124,9 +131,12 @@ func TestDepthFirstSearch(t *testing.T) {
         },
     }
 
-    path := DepthFirstSearch(g, 1, 9)
-    expected := []int{1, 2, 4, 7, 5, 3, 6, 8, 9}
+    path, err := DepthFirstSearch(g, 1, 9)
+    if err != nil {
+        t.Fatalf("DepthFirstSearch: %v", err)
+    }
 
+    expected := []int{1, 2, 4, 7, 5, 3, 6, 8, 9}
     if !equalPath(path, expected) {
         t.Errorf("Path: %v. Expected: %v", path, expected)
     }
