@@ -1,7 +1,6 @@
-package search
+package grapho
 
 import (
-    "github.com/ichinaski/graph-utils/graph"
     "testing"
 )
 
@@ -27,12 +26,12 @@ func TestDijkstra(t *testing.T) {
     //  / 1        1        1       1    \
     // 1-----> 2 -----> 3 -----> 4 -----> 5
     //  \_______1_______/       
-    g := graph.Graph {
-        Nodes: map[uint64][]graph.Edge {
-            1: []graph.Edge { {2, 1}, {3, 1}, {5, 4} },
-            2: []graph.Edge { {4, 1} },
-            3: []graph.Edge { {4, 1} },
-            4: []graph.Edge { {5, 1} },
+    g := Graph {
+        Nodes: map[uint64][]Edge {
+            1: []Edge { {2, 1}, {3, 1}, {5, 4} },
+            2: []Edge { {4, 1} },
+            3: []Edge { {4, 1} },
+            4: []Edge { {5, 1} },
         },
     }
 
@@ -58,17 +57,17 @@ func TestAStar(t *testing.T) {
     //  1  2  4
     //  3  5  7
     //  6  8  9
-    g := graph.Graph {
-        Nodes: map[uint64][]graph.Edge {
-            1: []graph.Edge { {2, 1}, {3, 1} },
-            2: []graph.Edge { {1, 1}, {4, 1}, {5, 1} },
-            3: []graph.Edge { {1, 1}, {5, 1}, {6, 1} },
-            4: []graph.Edge { {2, 1}, {7, 1} },
-            5: []graph.Edge { {2, 1}, {3, 1}, {7, 1}, {8, 1} },
-            6: []graph.Edge { {3, 1}, {8, 1} },
-            7: []graph.Edge { {4, 1}, {5, 1}, {9, 1} },
-            8: []graph.Edge { {5, 1}, {6, 1}, {9, 1} },
-            9: []graph.Edge { {7, 1}, {8, 1} },
+    g := Graph {
+        Nodes: map[uint64][]Edge {
+            1: []Edge { {2, 1}, {3, 1} },
+            2: []Edge { {1, 1}, {4, 1}, {5, 1} },
+            3: []Edge { {1, 1}, {5, 1}, {6, 1} },
+            4: []Edge { {2, 1}, {7, 1} },
+            5: []Edge { {2, 1}, {3, 1}, {7, 1}, {8, 1} },
+            6: []Edge { {3, 1}, {8, 1} },
+            7: []Edge { {4, 1}, {5, 1}, {9, 1} },
+            8: []Edge { {5, 1}, {6, 1}, {9, 1} },
+            9: []Edge { {7, 1}, {8, 1} },
         },
     }
 
@@ -92,17 +91,17 @@ func TestBreathFirstSearch(t *testing.T) {
     //  1  2  4
     //  3  5  7
     //  6  8  9
-    g := graph.Graph {
-        Nodes: map[uint64][]graph.Edge {
-            1: []graph.Edge { {2, 1}, {3, 1} },
-            2: []graph.Edge { {1, 1}, {4, 1}, {5, 1} },
-            3: []graph.Edge { {1, 1}, {5, 1}, {6, 1} },
-            4: []graph.Edge { {2, 1}, {7, 1} },
-            5: []graph.Edge { {2, 1}, {3, 1}, {7, 1}, {8, 1} },
-            6: []graph.Edge { {3, 1}, {8, 1} },
-            7: []graph.Edge { {4, 1}, {5, 1}, {9, 1} },
-            8: []graph.Edge { {5, 1}, {6, 1}, {9, 1} },
-            9: []graph.Edge { {7, 1}, {8, 1} },
+    g := Graph {
+        Nodes: map[uint64][]Edge {
+            1: []Edge { {2, 1}, {3, 1} },
+            2: []Edge { {1, 1}, {4, 1}, {5, 1} },
+            3: []Edge { {1, 1}, {5, 1}, {6, 1} },
+            4: []Edge { {2, 1}, {7, 1} },
+            5: []Edge { {2, 1}, {3, 1}, {7, 1}, {8, 1} },
+            6: []Edge { {3, 1}, {8, 1} },
+            7: []Edge { {4, 1}, {5, 1}, {9, 1} },
+            8: []Edge { {5, 1}, {6, 1}, {9, 1} },
+            9: []Edge { {7, 1}, {8, 1} },
         },
     }
 
@@ -122,17 +121,17 @@ func TestDepthFirstSearch(t *testing.T) {
     //  1  2  4
     //  3  5  7
     //  6  8  9
-    g := graph.Graph {
-        Nodes: map[uint64][]graph.Edge {
-            1: []graph.Edge { {2, 1}, {3, 1} },
-            2: []graph.Edge { {1, 1}, {4, 1}, {5, 1} },
-            3: []graph.Edge { {1, 1}, {5, 1}, {6, 1} },
-            4: []graph.Edge { {2, 1}, {7, 1} },
-            5: []graph.Edge { {2, 1}, {3, 1}, {7, 1}, {8, 1} },
-            6: []graph.Edge { {3, 1}, {8, 1} },
-            7: []graph.Edge { {4, 1}, {5, 1}, {9, 1} },
-            8: []graph.Edge { {5, 1}, {6, 1}, {9, 1} },
-            9: []graph.Edge { {7, 1}, {8, 1} },
+    g := Graph {
+        Nodes: map[uint64][]Edge {
+            1: []Edge { {2, 1}, {3, 1} },
+            2: []Edge { {1, 1}, {4, 1}, {5, 1} },
+            3: []Edge { {1, 1}, {5, 1}, {6, 1} },
+            4: []Edge { {2, 1}, {7, 1} },
+            5: []Edge { {2, 1}, {3, 1}, {7, 1}, {8, 1} },
+            6: []Edge { {3, 1}, {8, 1} },
+            7: []Edge { {4, 1}, {5, 1}, {9, 1} },
+            8: []Edge { {5, 1}, {6, 1}, {9, 1} },
+            9: []Edge { {7, 1}, {8, 1} },
         },
     }
 

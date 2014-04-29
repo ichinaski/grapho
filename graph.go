@@ -1,4 +1,4 @@
-package graph
+package grapho
 
 import "errors"
 

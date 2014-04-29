@@ -1,5 +1,5 @@
-graph-utils
-===========
+grapho
+======
 
 Go implementation of graph theory algorithms
 

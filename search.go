@@ -1,9 +1,8 @@
-package search
+package grapho
 
 import (
     "errors"
-    "github.com/ichinaski/graph-utils/container"
-    "github.com/ichinaski/graph-utils/graph"
+    "github.com/ichinaski/grapho/container"
 )
 
 const (
@@ -42,23 +41,23 @@ type Heuristic func(node, goal uint64) int
 
 func NullHeuristic(node, goal uint64) int { return 0 }
 
-func BreathFirstSearch(graph graph.Graph, start, goal uint64) ([]uint64, error) {
+func BreathFirstSearch(graph Graph, start, goal uint64) ([]uint64, error) {
     return search(graph, start, goal, type_bfs, nil)
 }
 
-func DepthFirstSearch(graph graph.Graph, start, goal uint64) ([]uint64, error) {
+func DepthFirstSearch(graph Graph, start, goal uint64) ([]uint64, error) {
     return search(graph, start, goal, type_dfs, nil)
 }
 
-func Dijkstra(graph graph.Graph, start, goal uint64) ([]uint64, error) {
+func Dijkstra(graph Graph, start, goal uint64) ([]uint64, error) {
     return search(graph, start, goal, type_dijkstra, nil)
 }
 
-func Astar(graph graph.Graph, start, goal uint64, heuristic Heuristic) ([]uint64, error) {
+func Astar(graph Graph, start, goal uint64, heuristic Heuristic) ([]uint64, error) {
     return search(graph, start, goal, type_astar, heuristic)
 }
 
-func search(graph graph.Graph, start, goal uint64, search_type uint, heuristic Heuristic) ([]uint64, error) {
+func search(graph Graph, start, goal uint64, search_type uint, heuristic Heuristic) ([]uint64, error) {
     if heuristic == nil { heuristic = NullHeuristic }
 
     // Initialize the open set, according to the type of search passed in
