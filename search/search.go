@@ -17,7 +17,7 @@ const (
 // Contains the nodeId, its parent int, and the total cost of traversing 
 // the graph to reach this position
 type State struct {
-    nodeId, parentId int
+    nodeId, parentId uint64
     cost int
 }
 
@@ -38,27 +38,27 @@ type OpenStack struct { *container.Stack }
 func (s *OpenStack) Push(item interface{}, priority int) { s.Stack.Push(item) }
 
 // Heuristic calculates the estimated cost between two nodes
-type Heuristic func(node, goal int) int
+type Heuristic func(node, goal uint64) int
 
-func NullHeuristic(node, goal int) int { return 0 }
+func NullHeuristic(node, goal uint64) int { return 0 }
 
-func BreathFirstSearch(graph graph.Graph, start, goal int) ([]int, error) {
+func BreathFirstSearch(graph graph.Graph, start, goal uint64) ([]uint64, error) {
     return search(graph, start, goal, type_bfs, nil)
 }
 
-func DepthFirstSearch(graph graph.Graph, start, goal int) ([]int, error) {
+func DepthFirstSearch(graph graph.Graph, start, goal uint64) ([]uint64, error) {
     return search(graph, start, goal, type_dfs, nil)
 }
 
-func Dijkstra(graph graph.Graph, start, goal int) ([]int, error) {
+func Dijkstra(graph graph.Graph, start, goal uint64) ([]uint64, error) {
     return search(graph, start, goal, type_dijkstra, nil)
 }
 
-func Astar(graph graph.Graph, start, goal int, heuristic Heuristic) ([]int, error) {
+func Astar(graph graph.Graph, start, goal uint64, heuristic Heuristic) ([]uint64, error) {
     return search(graph, start, goal, type_astar, heuristic)
 }
 
-func search(graph graph.Graph, start, goal int, search_type uint, heuristic Heuristic) ([]int, error) {
+func search(graph graph.Graph, start, goal uint64, search_type uint, heuristic Heuristic) ([]uint64, error) {
     if heuristic == nil { heuristic = NullHeuristic }
 
     // Initialize the open set, according to the type of search passed in
@@ -72,7 +72,7 @@ func search(graph graph.Graph, start, goal int, search_type uint, heuristic Heur
             openSet = &container.PQueue{}// Priority queue if Dijkstra or A*
     }
 
-    closedSet := make(map[int]int)// Visited nodes, with a reference to their direct ancestor
+    closedSet := make(map[uint64]uint64)// Visited nodes, with a reference to their direct ancestor
 
     state := &State { start, 0, 0}
     openSet.Push(state, 0)
@@ -91,7 +91,10 @@ func search(graph graph.Graph, start, goal int, search_type uint, heuristic Heur
             }
 
             // Add the nodes not present in the closedSet into the openSet
-            edges := graph.GetEdges(state.nodeId)
+            edges, err := graph.GetEdges(state.nodeId);
+            if  err != nil {
+                continue;// Malformed Graph. Skip this node
+            }
 
             // for depth-first search, we have to alter the order in which we add the successors to the stack,
             // to ensure items are expanded as expected (in the order they have been passed in)
@@ -113,8 +116,8 @@ func search(graph graph.Graph, start, goal int, search_type uint, heuristic Heur
     return nil, errors.New("Path not found")
 }
 
-func calculatePath(start, goal int, closedSet map[int]int) []int {
-    path := make([]int, 0, len(closedSet))
+func calculatePath(start, goal uint64, closedSet map[uint64]uint64) []uint64 {
+    path := make([]uint64, 0, len(closedSet))
     // fetch all the nodes in a descendant way, from goal to start
     nodeId := goal
     for nodeId != 0 {
