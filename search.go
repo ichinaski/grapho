@@ -43,23 +43,23 @@ type Heuristic func(node, goal uint64) int
 
 func NullHeuristic(node, goal uint64) int { return 0 }
 
-func BreathFirstSearch(graph Graph, start, goal uint64) ([]uint64, error) {
+func BreathFirstSearch(graph *Graph, start, goal uint64) ([]uint64, error) {
 	return search(graph, start, goal, type_bfs, nil)
 }
 
-func DepthFirstSearch(graph Graph, start, goal uint64) ([]uint64, error) {
+func DepthFirstSearch(graph *Graph, start, goal uint64) ([]uint64, error) {
 	return search(graph, start, goal, type_dfs, nil)
 }
 
-func Dijkstra(graph Graph, start, goal uint64) ([]uint64, error) {
+func Dijkstra(graph *Graph, start, goal uint64) ([]uint64, error) {
 	return search(graph, start, goal, type_dijkstra, nil)
 }
 
-func Astar(graph Graph, start, goal uint64, heuristic Heuristic) ([]uint64, error) {
+func Astar(graph *Graph, start, goal uint64, heuristic Heuristic) ([]uint64, error) {
 	return search(graph, start, goal, type_astar, heuristic)
 }
 
-func search(graph Graph, start, goal uint64, search_type uint, heuristic Heuristic) ([]uint64, error) {
+func search(graph *Graph, start, goal uint64, search_type uint, heuristic Heuristic) ([]uint64, error) {
 	if heuristic == nil {
 		heuristic = NullHeuristic
 	}
@@ -94,7 +94,7 @@ func search(graph Graph, start, goal uint64, search_type uint, heuristic Heurist
 			}
 
 			// Add the nodes not present in the closedSet into the openSet
-			edges, err := graph.GetEdges(state.nodeId)
+			edges, err := graph.Edges(state.nodeId)
 			if err != nil {
 				continue // Malformed Graph. Skip this node
 			}

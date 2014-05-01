@@ -19,57 +19,28 @@ func equalPath(s1, s2 []uint64) bool {
 	return true
 }
 
-// Test Dijkstra with a simple graph containing 5 vertices.
+// TestDijkstra tests the Dijkstra algorithm with the sample test
 func TestDijkstra(t *testing.T) {
-	//                  4
-	//   ________________________________
-	//  / 1        1        1       1    \
-	// 1-----> 2 -----> 3 -----> 4 -----> 5
-	//  \_______1_______/
-	g := Graph{
-		Nodes: map[uint64][]Edge{
-			1: []Edge{{2, 1}, {3, 1}, {5, 4}},
-			2: []Edge{{4, 1}},
-			3: []Edge{{4, 1}},
-			4: []Edge{{5, 1}},
-		},
-	}
+	g := sampleGraph()
 
-	expected := []uint64{1, 2, 4, 5}
-
-	path, err := Dijkstra(g, 1, 5)
+	expected := []uint64{1, 2, 5, 8}
+	path, err := Dijkstra(g, 1, 8)
 	if err != nil {
 		t.Fatalf("Dijkstra: %v", err)
-	}
-	if !equalPath(path, expected) {
+	} else if !equalPath(path, expected) {
 		t.Errorf("Path: %v. Expected: %v", path, expected)
 	}
 
-	path, err = Dijkstra(g, 1, 6)
+	path, err = Dijkstra(g, 1, 10)
 	if err == nil {
 		t.Error("Dijkstra: Did not get expected error")
 	}
 }
 
-// Test Astar with a simple 3x3 grid and an heuristic that
+// TestAstar tests the A* algorithm with an heuristic that
 // assigns more priority to numbers closer to 9
 func TestAStar(t *testing.T) {
-	//  1  2  4
-	//  3  5  7
-	//  6  8  9
-	g := Graph{
-		Nodes: map[uint64][]Edge{
-			1: []Edge{{2, 1}, {3, 1}},
-			2: []Edge{{1, 1}, {4, 1}, {5, 1}},
-			3: []Edge{{1, 1}, {5, 1}, {6, 1}},
-			4: []Edge{{2, 1}, {7, 1}},
-			5: []Edge{{2, 1}, {3, 1}, {7, 1}, {8, 1}},
-			6: []Edge{{3, 1}, {8, 1}},
-			7: []Edge{{4, 1}, {5, 1}, {9, 1}},
-			8: []Edge{{5, 1}, {6, 1}, {9, 1}},
-			9: []Edge{{7, 1}, {8, 1}},
-		},
-	}
+	g := sampleGraph()
 
 	h := func(node, goal uint64) int {
 		return (int)(goal - node)
@@ -86,24 +57,9 @@ func TestAStar(t *testing.T) {
 	}
 }
 
-// Test BreathFirstSearch with a simple 3x3 grid
+// TestBreathFirstSearch tests BreathFirstSearch algorithm with the sample test
 func TestBreathFirstSearch(t *testing.T) {
-	//  1  2  4
-	//  3  5  7
-	//  6  8  9
-	g := Graph{
-		Nodes: map[uint64][]Edge{
-			1: []Edge{{2, 1}, {3, 1}},
-			2: []Edge{{1, 1}, {4, 1}, {5, 1}},
-			3: []Edge{{1, 1}, {5, 1}, {6, 1}},
-			4: []Edge{{2, 1}, {7, 1}},
-			5: []Edge{{2, 1}, {3, 1}, {7, 1}, {8, 1}},
-			6: []Edge{{3, 1}, {8, 1}},
-			7: []Edge{{4, 1}, {5, 1}, {9, 1}},
-			8: []Edge{{5, 1}, {6, 1}, {9, 1}},
-			9: []Edge{{7, 1}, {8, 1}},
-		},
-	}
+	g := sampleGraph()
 
 	path, err := BreathFirstSearch(g, 1, 9)
 	if err != nil {
@@ -116,24 +72,9 @@ func TestBreathFirstSearch(t *testing.T) {
 	}
 }
 
-// Test DepthFirstSearch with a simple 3x3 grid
+// TestDepthFirstSearch tests DepthFirstSearch algorithm with the sample test
 func TestDepthFirstSearch(t *testing.T) {
-	//  1  2  4
-	//  3  5  7
-	//  6  8  9
-	g := Graph{
-		Nodes: map[uint64][]Edge{
-			1: []Edge{{2, 1}, {3, 1}},
-			2: []Edge{{1, 1}, {4, 1}, {5, 1}},
-			3: []Edge{{1, 1}, {5, 1}, {6, 1}},
-			4: []Edge{{2, 1}, {7, 1}},
-			5: []Edge{{2, 1}, {3, 1}, {7, 1}, {8, 1}},
-			6: []Edge{{3, 1}, {8, 1}},
-			7: []Edge{{4, 1}, {5, 1}, {9, 1}},
-			8: []Edge{{5, 1}, {6, 1}, {9, 1}},
-			9: []Edge{{7, 1}, {8, 1}},
-		},
-	}
+	g := sampleGraph()
 
 	path, err := DepthFirstSearch(g, 1, 9)
 	if err != nil {
@@ -144,4 +85,56 @@ func TestDepthFirstSearch(t *testing.T) {
 	if !equalPath(path, expected) {
 		t.Errorf("Path: %v. Expected: %v", path, expected)
 	}
+}
+
+// sampleGraph creates a simple Graph for testing purposes
+func sampleGraph() *Graph {
+	//  1  2  4
+	//  3  5  7
+	//  6  8  9
+	g := NewGraph()
+	g.AddNode(1)
+	g.AddNode(2)
+	g.AddNode(3)
+	g.AddNode(4)
+	g.AddNode(5)
+	g.AddNode(6)
+	g.AddNode(7)
+	g.AddNode(8)
+	g.AddNode(9)
+
+	g.AddEdge(1, Edge{2, 1})
+	g.AddEdge(1, Edge{3, 1})
+
+	g.AddEdge(2, Edge{1, 1})
+	g.AddEdge(2, Edge{4, 1})
+	g.AddEdge(2, Edge{5, 1})
+
+	g.AddEdge(3, Edge{1, 1})
+	g.AddEdge(3, Edge{5, 1})
+	g.AddEdge(3, Edge{6, 1})
+
+	g.AddEdge(4, Edge{2, 1})
+	g.AddEdge(4, Edge{7, 1})
+
+	g.AddEdge(5, Edge{2, 1})
+	g.AddEdge(5, Edge{3, 1})
+	g.AddEdge(5, Edge{7, 1})
+	g.AddEdge(5, Edge{8, 1})
+
+	g.AddEdge(6, Edge{3, 1})
+	g.AddEdge(6, Edge{8, 1})
+
+	g.AddEdge(7, Edge{4, 1})
+	g.AddEdge(7, Edge{5, 1})
+	g.AddEdge(7, Edge{9, 1})
+
+	g.AddEdge(8, Edge{5, 1})
+	g.AddEdge(8, Edge{6, 1})
+	g.AddEdge(8, Edge{9, 1})
+
+	g.AddEdge(9, Edge{7, 1})
+	g.AddEdge(9, Edge{8, 1})
+
+	return g
 }
