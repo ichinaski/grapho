@@ -9,7 +9,7 @@ type PQueue []entry
 
 func (h *PQueue) Len() int { return len(*h) }
 
-func (h PQueue) priority(index int) int { return h[index].priority }
+func (h *PQueue) priority(index int) int { return (*h)[index].priority }
 
 func (h *PQueue) swap(i, j int) { (*h)[i], (*h)[j] = (*h)[j], (*h)[i] }
 
