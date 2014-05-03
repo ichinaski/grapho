@@ -5,7 +5,7 @@ import (
 )
 
 func TestNodes(t *testing.T) {
-	g := NewGraph()
+	g := NewDiGraph()
 	g.AddNode(1)
 	g.AddNode(2)
 	g.AddNode(3)
@@ -17,7 +17,7 @@ func TestNodes(t *testing.T) {
 }
 
 func TestAddNode(t *testing.T) {
-	graph := NewGraph()
+	graph := NewDiGraph()
 	graph.AddNode(1)
 	graph.AddNode(2)
 	graph.AddNode(3)
@@ -29,7 +29,7 @@ func TestAddNode(t *testing.T) {
 }
 
 func TestAddEdge(t *testing.T) {
-	g := NewGraph()
+	g := NewDiGraph()
 	g.AddNode(1)
 
 	if err := g.AddEdge(1, Edge{2, 1}); err == nil {
