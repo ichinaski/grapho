@@ -21,7 +21,7 @@ func equalPath(s1, s2 []uint64) bool {
 
 // TestDijkstra tests the Dijkstra algorithm with the sample test
 func TestDijkstra(t *testing.T) {
-	g := sampleGraph()
+	g := sampleDiGraph()
 
 	expected := []uint64{1, 2, 5, 8}
 	path, err := Dijkstra(g, 1, 8)
@@ -40,7 +40,7 @@ func TestDijkstra(t *testing.T) {
 // TestAstar tests the A* algorithm with an heuristic that
 // assigns more priority to numbers closer to 9
 func TestAStar(t *testing.T) {
-	g := sampleGraph()
+	g := sampleDiGraph()
 
 	h := func(node, goal uint64) int {
 		return (int)(goal - node)
@@ -59,7 +59,7 @@ func TestAStar(t *testing.T) {
 
 // TestBreathFirstSearch tests BreathFirstSearch algorithm with the sample test
 func TestBreathFirstSearch(t *testing.T) {
-	g := sampleGraph()
+	g := sampleDiGraph()
 
 	path, err := BreathFirstSearch(g, 1, 9)
 	if err != nil {
@@ -74,7 +74,7 @@ func TestBreathFirstSearch(t *testing.T) {
 
 // TestDepthFirstSearch tests DepthFirstSearch algorithm with the sample test
 func TestDepthFirstSearch(t *testing.T) {
-	g := sampleGraph()
+	g := sampleDiGraph()
 
 	path, err := DepthFirstSearch(g, 1, 9)
 	if err != nil {
@@ -87,12 +87,12 @@ func TestDepthFirstSearch(t *testing.T) {
 	}
 }
 
-// sampleGraph creates a simple Graph for testing purposes
-func sampleGraph() *Graph {
+// sampleDiGraph creates a simple DiGraph for testing purposes
+func sampleDiGraph() *DiGraph {
 	//  1  2  4
 	//  3  5  7
 	//  6  8  9
-	g := NewGraph()
+	g := NewDiGraph()
 	g.AddNode(1)
 	g.AddNode(2)
 	g.AddNode(3)
