@@ -1,7 +1,7 @@
 grapho
 ======
 
-Go implementation of graph theory algorithms
+grapho is a Go implementation of graph theory data structures and algorithms.
 
 ### Algorithms:
 * Dijkstra (uniform cost search)
