@@ -12,12 +12,12 @@ const (
 	type_astar
 )
 
-// State is a graph position for which its ancestors have been evaluated.
+// searchstate is a graph position for which its ancestors have been evaluated.
 // Contains the nodeId, its parent int, and the total cost of traversing
 // the graph to reach this position
-type State struct {
-	nodeId, parentId uint64
-	cost             int
+type searchstate struct {
+	node, parent uint64
+	cost         int // OpenSet takes int as priority type. TODO: add uint64 support
 }
 
 // OpenSet defines the functions that any container used to keep track of
@@ -43,23 +43,23 @@ type Heuristic func(node, goal uint64) int
 
 func NullHeuristic(node, goal uint64) int { return 0 }
 
-func BreathFirstSearch(graph *DiGraph, start, goal uint64) ([]uint64, error) {
+func BreathFirstSearch(graph *Graph, start, goal uint64) ([]uint64, error) {
 	return search(graph, start, goal, type_bfs, nil)
 }
 
-func DepthFirstSearch(graph *DiGraph, start, goal uint64) ([]uint64, error) {
+func DepthFirstSearch(graph *Graph, start, goal uint64) ([]uint64, error) {
 	return search(graph, start, goal, type_dfs, nil)
 }
 
-func Dijkstra(graph *DiGraph, start, goal uint64) ([]uint64, error) {
+func Dijkstra(graph *Graph, start, goal uint64) ([]uint64, error) {
 	return search(graph, start, goal, type_dijkstra, nil)
 }
 
-func Astar(graph *DiGraph, start, goal uint64, heuristic Heuristic) ([]uint64, error) {
+func Astar(graph *Graph, start, goal uint64, heuristic Heuristic) ([]uint64, error) {
 	return search(graph, start, goal, type_astar, heuristic)
 }
 
-func search(graph *DiGraph, start, goal uint64, search_type uint, heuristic Heuristic) ([]uint64, error) {
+func search(graph *Graph, start, goal uint64, search_type uint, heuristic Heuristic) ([]uint64, error) {
 	if heuristic == nil {
 		heuristic = NullHeuristic
 	}
@@ -77,40 +77,42 @@ func search(graph *DiGraph, start, goal uint64, search_type uint, heuristic Heur
 
 	closedSet := make(map[uint64]uint64) // Visited nodes, with a reference to their direct ancestor
 
-	state := &State{start, 0, 0}
+	state := &searchstate{start, 0, 0}
 	openSet.Push(state, 0)
 
 	for openSet.Len() > 0 {
 		item := openSet.Pop()
-		state = item.(*State)
+		state = item.(*searchstate)
 
 		// Only consider non expanded nodes (not present in closedSet)
-		if _, ok := closedSet[state.nodeId]; !ok {
+		if _, ok := closedSet[state.node]; !ok {
 			// Store this node in the closed list, with a reference to its parent
-			closedSet[state.nodeId] = state.parentId
+			closedSet[state.node] = state.parent
 
-			if state.nodeId == goal {
+			if state.node == goal {
 				return calculatePath(start, goal, closedSet), nil
 			}
 
 			// Add the nodes not present in the closedSet into the openSet
-			edges, err := graph.Edges(state.nodeId)
-			if err != nil {
+			succ, ok := graph.Neighbors(state.node)
+			if !ok {
 				continue // Malformed Graph. Skip this node
 			}
 
 			// for depth-first search, we have to alter the order in which we add the successors to the stack,
 			// to ensure items are expanded as expected (in the order they have been passed in)
 			if search_type == type_dfs {
-				for i, j := 0, len(edges)-1; i < j; i, j = i+1, j-1 {
-					edges[i], edges[j] = edges[j], edges[i]
+				for i, j := 0, len(succ)-1; i < j; i, j = i+1, j-1 {
+					succ[i], succ[j] = succ[j], succ[i]
 				}
 			}
 
-			for _, edge := range edges {
-				if _, ok := closedSet[edge.NodeId]; !ok {
-					nextState := &State{edge.NodeId, state.nodeId, state.cost + edge.Cost}
-					openSet.Push(nextState, nextState.cost+heuristic(edge.NodeId, goal))
+			for _, node := range succ {
+				if _, ok := closedSet[node]; !ok {
+					if edge, ok := graph.Edge(state.node, node); ok {
+						nextState := &searchstate{node, state.node, state.cost + (int)(edge.Weight)} // TODO: Avoid the int cast!
+						openSet.Push(nextState, nextState.cost+heuristic(node, goal))
+					}
 				}
 			}
 		}
@@ -122,10 +124,10 @@ func search(graph *DiGraph, start, goal uint64, search_type uint, heuristic Heur
 func calculatePath(start, goal uint64, closedSet map[uint64]uint64) []uint64 {
 	path := make([]uint64, 0, len(closedSet))
 	// fetch all the nodes in a descendant way, from goal to start
-	nodeId := goal
-	for nodeId != 0 {
-		path = append(path, nodeId)
-		nodeId = closedSet[nodeId]
+	node := goal
+	for node != 0 {
+		path = append(path, node)
+		node = closedSet[node]
 	}
 
 	// Reverse the slice
