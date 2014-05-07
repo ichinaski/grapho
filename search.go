@@ -5,11 +5,14 @@ import (
 	"github.com/ichinaski/grapho/container"
 )
 
+// Algorithm binds each search type to a constant unsigned integer
+type Algorithm uint
+
 const (
-	type_bfs = iota
-	type_dfs
-	type_dijkstra
-	type_astar
+	BreathFirstSearch = iota
+	DepthFirstSearch
+	Dijkstra
+	Astar
 )
 
 // searchstate is a graph position for which its ancestors have been evaluated.
@@ -43,35 +46,21 @@ type Heuristic func(node, goal uint64) int
 
 func NullHeuristic(node, goal uint64) int { return 0 }
 
-func BreathFirstSearch(graph *Graph, start, goal uint64) ([]uint64, error) {
-	return search(graph, start, goal, type_bfs, nil)
-}
-
-func DepthFirstSearch(graph *Graph, start, goal uint64) ([]uint64, error) {
-	return search(graph, start, goal, type_dfs, nil)
-}
-
-func Dijkstra(graph *Graph, start, goal uint64) ([]uint64, error) {
-	return search(graph, start, goal, type_dijkstra, nil)
-}
-
-func Astar(graph *Graph, start, goal uint64, heuristic Heuristic) ([]uint64, error) {
-	return search(graph, start, goal, type_astar, heuristic)
-}
-
-func search(graph *Graph, start, goal uint64, search_type uint, heuristic Heuristic) ([]uint64, error) {
+// Search find a path between two nodes. The type of search is determined by the Algorithm algo
+// If the Graph contains no path between the nodes, an error is returned
+func Search(graph *Graph, start, goal uint64, algo Algorithm, heuristic Heuristic) ([]uint64, error) {
 	if heuristic == nil {
 		heuristic = NullHeuristic
 	}
 
 	// Initialize the open set, according to the type of search passed in
 	var openSet OpenSet
-	switch search_type {
-	case type_bfs:
+	switch algo {
+	case BreathFirstSearch:
 		openSet = &OpenQueue{container.NewQueue()} // FIFO approach to expand nodes
-	case type_dfs:
+	case DepthFirstSearch:
 		openSet = &OpenStack{container.NewStack()} // LIFO approach to expand nodes
-	case type_dijkstra, type_astar:
+	case Dijkstra, Astar:
 		openSet = &container.PQueue{} // Priority queue if Dijkstra or A*
 	}
 
@@ -101,7 +90,7 @@ func search(graph *Graph, start, goal uint64, search_type uint, heuristic Heuris
 
 			// for depth-first search, we have to alter the order in which we add the successors to the stack,
 			// to ensure items are expanded as expected (in the order they have been passed in)
-			if search_type == type_dfs {
+			if algo == DepthFirstSearch {
 				for i, j := 0, len(succ)-1; i < j; i, j = i+1, j-1 {
 					succ[i], succ[j] = succ[j], succ[i]
 				}
