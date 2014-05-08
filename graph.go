@@ -9,37 +9,13 @@ func (p uint64Slice) Len() int           { return len(p) }
 func (p uint64Slice) Less(i, j int) bool { return p[i] < p[j] }
 func (p uint64Slice) Swap(i, j int)      { p[i], p[j] = p[j], p[i] }
 
-// Attr is a set of attributes associated to a node/edge.
-// Keys are strings. Values can be anything.
-type Attr struct {
-	attr map[string]interface{}
-}
-
-// NewAttr creates an empty set of attributes.
-func NewAttr() *Attr {
-	attr := Attr{make(map[string]interface{})}
-	return &attr
-}
-
-// Set associates a new key-value pair.
-func (attr *Attr) Set(key string, value interface{}) {
-	attr.attr[key] = value
-}
-
-// Get returns the associated value to the given key, and
-// a bool set to true if the key was found, false otherwise
-func (attr *Attr) Get(key string) (interface{}, bool) {
-	v, ok := attr.attr[key]
-	return v, ok
-}
-
 // Edge represents a relationship between two nodes.
 type Edge struct {
 	Weight uint64 // Edge weight (cost)
-	Attr   *Attr  // Edge attribute set
+	Attr   Attr   // Edge attribute set
 }
 
-func NewEdge(weight uint64, attr *Attr) *Edge {
+func NewEdge(weight uint64, attr Attr) *Edge {
 	if attr == nil {
 		attr = NewAttr()
 	}
@@ -50,7 +26,7 @@ func NewEdge(weight uint64, attr *Attr) *Edge {
 // Each pair of nodes can only hold one edge between them.
 type Graph struct {
 	directed bool                        // true to represent a Digraph, false for Undirected Graphs
-	nodes    map[uint64]*Attr            // Nodes present in the Graph, with their attributes
+	nodes    map[uint64]Attr             // Nodes present in the Graph, with their attributes
 	edges    map[uint64]map[uint64]*Edge // Adjacency list of edges, with their attributes
 }
 
@@ -58,14 +34,14 @@ type Graph struct {
 func NewGraph(directed bool) *Graph {
 	return &Graph{
 		directed: directed,
-		nodes:    make(map[uint64]*Attr),
+		nodes:    make(map[uint64]Attr),
 		edges:    make(map[uint64]map[uint64]*Edge),
 	}
 }
 
 // AddNode adds the given node to the Graph. If the node
 // already exists, it will override its attributes.
-func (g *Graph) AddNode(node uint64, attr *Attr) {
+func (g *Graph) AddNode(node uint64, attr Attr) {
 	if attr == nil {
 		attr = NewAttr()
 	}
@@ -89,7 +65,7 @@ func (g *Graph) DeleteNode(node uint64) {
 // AddEdge adds an edge (with its attributes) between nodes u and v
 // If the nodes don't exist, they will be automatically created.
 // If an u-v edge already existed, its attributes will be overridden.
-func (g *Graph) AddEdge(u, v, weight uint64, attr *Attr) {
+func (g *Graph) AddEdge(u, v, weight uint64, attr Attr) {
 	// Add nodes if necessary
 	if _, ok := g.nodes[u]; !ok {
 		g.AddNode(u, nil)
@@ -132,7 +108,7 @@ func (g *Graph) Nodes() []uint64 {
 
 // Node returns the attributes associated with a given node, and
 // a bool flag set to true if the node was found, false otherwise.
-func (g *Graph) Node(node uint64) (*Attr, bool) {
+func (g *Graph) Node(node uint64) (Attr, bool) {
 	attr, ok := g.nodes[node]
 	return attr, ok
 }
