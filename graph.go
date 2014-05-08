@@ -9,6 +9,15 @@ func (p uint64Slice) Len() int           { return len(p) }
 func (p uint64Slice) Less(i, j int) bool { return p[i] < p[j] }
 func (p uint64Slice) Swap(i, j int)      { p[i], p[j] = p[j], p[i] }
 
+// Attr is a set of attributes associated to a node/edge.
+// Keys are strings. Values can be anything.
+type Attr map[string]interface{}
+
+// NewAttr creates an empty set of attributes.
+func NewAttr() Attr {
+	return make(Attr)
+}
+
 // Edge represents a relationship between two nodes.
 type Edge struct {
 	Weight uint64 // Edge weight (cost)

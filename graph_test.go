@@ -23,7 +23,7 @@ func TestGraphAddNode(t *testing.T) {
 	g.AddNode(1, nil)
 
 	attr := NewAttr()
-	attr.Set("x", 25)
+	attr["x"] = 25
 	g.AddNode(2, attr)
 
 	if len(g.Nodes()) != 2 {
@@ -31,18 +31,18 @@ func TestGraphAddNode(t *testing.T) {
 	}
 
 	attr, _ = g.Node(2)
-	x, ok := attr.Get("x")
+	x, ok := attr["x"]
 	if !ok || x.(int) != 25 {
 		t.Errorf("Expected value: 25. Got %v", x)
 	}
 
 	// Update node
 	attr = NewAttr()
-	attr.Set("name", "Dylan")
+	attr["name"] = "Dylan"
 	g.AddNode(1, attr)
 
 	attr, _ = g.Node(1)
-	name, ok := attr.Get("name")
+	name, ok := attr["name"]
 	if !ok || name.(string) != "Dylan" {
 		t.Errorf("Expected value: 'Dylan'. Got %v", name)
 	}
@@ -63,7 +63,7 @@ func TestGraphDeleteNode(t *testing.T) {
 func TestGraphAddEdge(t *testing.T) {
 	g := NewGraph(false)
 	attr := NewAttr()
-	attr.Set("x", 5)
+	attr["x"] = 5
 	g.AddEdge(2, 1, 1, attr)
 
 	nodes, ok := g.Neighbors(1)
@@ -79,7 +79,7 @@ func TestGraphAddEdge(t *testing.T) {
 	if !ok {
 		t.Errorf("Edge was not successfully added")
 	}
-	x, ok := edge.Attr.Get("x")
+	x, ok := edge.Attr["x"]
 	if !ok || x.(int) != 5 {
 		t.Errorf("Expected value: 5. Got %v", x)
 	}
