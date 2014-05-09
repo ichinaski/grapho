@@ -5,14 +5,13 @@ type entry struct {
 	priority int
 }
 
+// PQueue implements a heap-based priority queue
 type PQueue []entry
 
+// Len returns the number of elements in the queue
 func (h *PQueue) Len() int { return len(*h) }
 
-func (h *PQueue) priority(index int) int { return (*h)[index].priority }
-
-func (h *PQueue) swap(i, j int) { (*h)[i], (*h)[j] = (*h)[j], (*h)[i] }
-
+// Push inserts an element in the queue with the given priority
 func (h *PQueue) Push(item interface{}, priority int) {
 	entry := entry{
 		item, priority,
@@ -33,6 +32,8 @@ func (h *PQueue) Push(item interface{}, priority int) {
 	}
 }
 
+// Pop returns the first element in the queue.
+// Make sure to check the queue size to ensure it has at least one item.
 func (h *PQueue) Pop() interface{} {
 	size := h.Len()
 
@@ -66,3 +67,7 @@ func (h *PQueue) Pop() interface{} {
 
 	return entry.item
 }
+
+func (h *PQueue) priority(index int) int { return (*h)[index].priority }
+
+func (h *PQueue) swap(i, j int) { (*h)[i], (*h)[j] = (*h)[j], (*h)[i] }
