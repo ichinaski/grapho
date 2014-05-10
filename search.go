@@ -6,10 +6,10 @@ import (
 )
 
 // Algorithm binds each search type to a constant unsigned integer
-type Algorithm uint
+type SearchAlgorithm uint
 
 const (
-	BreathFirstSearch = iota
+	BreathFirstSearch SearchAlgorithm = iota
 	DepthFirstSearch
 	Dijkstra
 	Astar
@@ -20,7 +20,7 @@ const (
 // the graph to reach this position
 type searchstate struct {
 	node, parent uint64
-	cost         int // OpenSet takes int as priority type. TODO: add uint64 support
+	cost         int // OpenSet takes int as priority type. TODO: add int64 support?
 }
 
 // OpenSet defines the functions that any container used to keep track of
@@ -48,7 +48,7 @@ func NullHeuristic(node, goal uint64) int { return 0 }
 
 // Search find a path between two nodes. The type of search is determined by the Algorithm algo
 // If the Graph contains no path between the nodes, an error is returned
-func Search(graph *Graph, start, goal uint64, algo Algorithm, heuristic Heuristic) ([]uint64, error) {
+func Search(graph *Graph, start, goal uint64, algo SearchAlgorithm, heuristic Heuristic) ([]uint64, error) {
 	if heuristic == nil {
 		heuristic = NullHeuristic
 	}
@@ -99,7 +99,7 @@ func Search(graph *Graph, start, goal uint64, algo Algorithm, heuristic Heuristi
 			for _, node := range succ {
 				if _, ok := closedSet[node]; !ok {
 					if edge, ok := graph.Edge(state.node, node); ok {
-						nextState := &searchstate{node, state.node, state.cost + (int)(edge.Weight)} // TODO: Avoid the int cast!
+						nextState := &searchstate{node, state.node, state.cost + edge.Weight}
 						openSet.Push(nextState, nextState.cost+heuristic(node, goal))
 					}
 				}

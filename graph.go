@@ -20,19 +20,19 @@ func NewAttr() Attr {
 
 // Edge represents a relationship between two nodes.
 type Edge struct {
-	Weight uint64 // Edge weight (cost)
-	Attr   Attr   // Edge attribute set
+	Weight int  // Edge weight (cost)
+	Attr   Attr // Edge attribute set
 }
 
-func NewEdge(weight uint64, attr Attr) *Edge {
+func NewEdge(weight int, attr Attr) *Edge {
 	if attr == nil {
 		attr = NewAttr()
 	}
 	return &Edge{weight, attr}
 }
 
-// Graph represents an Undirected Graph.
-// Each pair of nodes can only hold one edge between them.
+// Graph implementation. Each pair of nodes can only
+// hold one edge between them (no parallel edges).
 type Graph struct {
 	directed bool                        // true to represent a Digraph, false for Undirected Graphs
 	nodes    map[uint64]Attr             // Nodes present in the Graph, with their attributes
@@ -47,6 +47,9 @@ func NewGraph(directed bool) *Graph {
 		edges:    make(map[uint64]map[uint64]*Edge),
 	}
 }
+
+// IsDirected returns whether the Graph is directed or not.
+func (g *Graph) IsDirected() bool { return g.directed }
 
 // AddNode adds the given node to the Graph. If the node
 // already exists, it will override its attributes.
@@ -74,7 +77,7 @@ func (g *Graph) DeleteNode(node uint64) {
 // AddEdge adds an edge (with its attributes) between nodes u and v
 // If the nodes don't exist, they will be automatically created.
 // If an u-v edge already existed, its attributes will be overridden.
-func (g *Graph) AddEdge(u, v, weight uint64, attr Attr) {
+func (g *Graph) AddEdge(u, v uint64, weight int, attr Attr) {
 	// Add nodes if necessary
 	if _, ok := g.nodes[u]; !ok {
 		g.AddNode(u, nil)
