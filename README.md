@@ -45,7 +45,7 @@ For the shortest path implementation, a generic `Search` function is provided, w
 
 ```
 path, err := grapho.Search(graph, 1, 8, grapho.Dijkstra, nil)
-path, err := Search(graph, 1, 9, grapho.BreathFirstSearch, nil)
+path, err := grapho.Search(graph, 1, 9, grapho.BreathFirstSearch, nil)
 ...
 
 ```
@@ -58,7 +58,7 @@ If successful, a `uint64` slice will be returned, with the node ids that form th
 Given a connected, undirected graph, `MinimumSpanningTree` calculates the minimum cost subgraph that connects all the vertices together:
 
 ```
-mst, err := MinimumSpanningTree(graph, grapho.Prim)
+mst, err := grapho.MinimumSpanningTree(graph, grapho.Prim)
 ```
 
 ### TODO:
