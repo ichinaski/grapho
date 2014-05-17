@@ -48,6 +48,11 @@ func NewGraph(directed bool) *Graph {
 	}
 }
 
+// Len returns the number of nodes in the Graph
+func (g *Graph) Len() int {
+	return len(g.nodes)
+}
+
 // IsDirected returns whether the Graph is directed or not.
 func (g *Graph) IsDirected() bool { return g.directed }
 

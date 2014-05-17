@@ -18,8 +18,10 @@ const (
 
 // Connected returns whether the Graph is fully connected or not.
 func IsConnected(g *Graph) bool {
-	// TODO: Implement connectivity check (Depth-first search?)
-	return true
+	start := g.Nodes()[0] // choose randomly the first node
+	// Run a DFS to check if we can reach all the nodes in the Graph
+	closedSet := traverse(g, start, start, DepthFirstSearch, nil)
+	return len(closedSet) == g.Len()
 }
 
 // mstState is the struct to be stored in the heap, holding a node and its parent

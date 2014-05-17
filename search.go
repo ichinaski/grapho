@@ -49,6 +49,35 @@ func NullHeuristic(node, goal uint64) int { return 0 }
 // Search find a path between two nodes. The type of search is determined by the Algorithm algo
 // If the Graph contains no path between the nodes, an error is returned
 func Search(graph *Graph, start, goal uint64, algo SearchAlgorithm, heuristic Heuristic) ([]uint64, error) {
+	closedSet := traverse(graph, start, goal, algo, heuristic)
+
+	if _, ok := closedSet[goal]; ok {
+		// calculate the path
+		path := make([]uint64, 0, len(closedSet))
+		// fetch all the nodes in a descendant way, from goal to start
+		node := goal
+		for node != 0 {
+			path = append(path, node)
+			node = closedSet[node]
+		}
+
+		// Reverse the slice
+		for i, j := 0, len(path)-1; i < j; i, j = i+1, j-1 {
+			path[i], path[j] = path[j], path[i]
+		}
+
+		return path, nil
+	}
+
+	return nil, errors.New("Path not found")
+}
+
+// traverse traverses the Graph with the specified algorithm, returning a map of visited nodes,
+// with a reference to their direct ancestor. If goal and start are the same node, every possible
+// node will be expanded. Otherwise, the traversal will stop when goal is expanded.
+func traverse(graph *Graph, start, goal uint64, algo SearchAlgorithm, heuristic Heuristic) (closedSet map[uint64]uint64) {
+	closedSet = make(map[uint64]uint64)
+
 	if heuristic == nil {
 		heuristic = NullHeuristic
 	}
@@ -64,8 +93,6 @@ func Search(graph *Graph, start, goal uint64, algo SearchAlgorithm, heuristic He
 		openSet = &container.PQueue{} // Priority queue if Dijkstra or A*
 	}
 
-	closedSet := make(map[uint64]uint64) // Visited nodes, with a reference to their direct ancestor
-
 	state := &searchstate{start, 0, 0}
 	openSet.Push(state, 0)
 
@@ -78,8 +105,8 @@ func Search(graph *Graph, start, goal uint64, algo SearchAlgorithm, heuristic He
 			// Store this node in the closed list, with a reference to its parent
 			closedSet[state.node] = state.parent
 
-			if state.node == goal {
-				return calculatePath(start, goal, closedSet), nil
+			if state.node == goal && start != goal {
+				return
 			}
 
 			// Add the nodes not present in the closedSet into the openSet
@@ -107,22 +134,5 @@ func Search(graph *Graph, start, goal uint64, algo SearchAlgorithm, heuristic He
 		}
 	}
 
-	return nil, errors.New("Path not found")
-}
-
-func calculatePath(start, goal uint64, closedSet map[uint64]uint64) []uint64 {
-	path := make([]uint64, 0, len(closedSet))
-	// fetch all the nodes in a descendant way, from goal to start
-	node := goal
-	for node != 0 {
-		path = append(path, node)
-		node = closedSet[node]
-	}
-
-	// Reverse the slice
-	for i, j := 0, len(path)-1; i < j; i, j = i+1, j-1 {
-		path[i], path[j] = path[j], path[i]
-	}
-
-	return path
+	return
 }
