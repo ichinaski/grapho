@@ -30,8 +30,8 @@ func TestSearch(t *testing.T) {
 	testAstar(t, sampleDiGraph())
 
 	// BFS
-	testBreathFirstSearch(t, sampleGraph())
-	testBreathFirstSearch(t, sampleDiGraph())
+	testBreadthFirstSearch(t, sampleGraph())
+	testBreadthFirstSearch(t, sampleDiGraph())
 
 	// DFS
 	testDepthFirstSearch(t, sampleGraph())
@@ -72,11 +72,11 @@ func testAstar(t *testing.T, g *Graph) {
 	}
 }
 
-// testBreathFirstSearch tests BreathFirstSearch algorithm with the given graph
-func testBreathFirstSearch(t *testing.T, g *Graph) {
-	path, err := Search(g, 1, 9, BreathFirstSearch, nil)
+// testBreadthFirstSearch tests BreadthFirstSearch algorithm with the given graph
+func testBreadthFirstSearch(t *testing.T, g *Graph) {
+	path, err := Search(g, 1, 9, BreadthFirstSearch, nil)
 	if err != nil {
-		t.Fatalf("BreathFirstSearch: %v", err)
+		t.Fatalf("BreadthFirstSearch: %v", err)
 	}
 
 	expected := []uint64{1, 2, 4, 7, 9}

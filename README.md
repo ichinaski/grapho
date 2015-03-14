@@ -38,14 +38,14 @@ To check all the available methods to manipulate a Graph, see the [GoDoc](http:/
 ### Search:
 * Dijkstra (uniform cost search)
 * A* (best-first search with heuristic)
-* Breath-first search
+* Breadth-first search
 * Depth-first search
 
 For the shortest path implementation, a generic `Search` function is provided, which takes the desired `SearchAlgorithm` to be used as a parameter:
 
 ```
 path, err := grapho.Search(graph, 1, 8, grapho.Dijkstra, nil)
-path, err := grapho.Search(graph, 1, 9, grapho.BreathFirstSearch, nil)
+path, err := grapho.Search(graph, 1, 9, grapho.BreadthFirstSearch, nil)
 ...
 
 ```

@@ -9,7 +9,7 @@ import (
 type SearchAlgorithm uint
 
 const (
-	BreathFirstSearch SearchAlgorithm = iota
+	BreadthFirstSearch SearchAlgorithm = iota
 	DepthFirstSearch
 	Dijkstra
 	Astar
@@ -85,7 +85,7 @@ func traverse(graph *Graph, start, goal uint64, algo SearchAlgorithm, heuristic 
 	// Initialize the open set, according to the type of search passed in
 	var openSet OpenSet
 	switch algo {
-	case BreathFirstSearch:
+	case BreadthFirstSearch:
 		openSet = &OpenQueue{container.NewQueue()} // FIFO approach to expand nodes
 	case DepthFirstSearch:
 		openSet = &OpenStack{container.NewStack()} // LIFO approach to expand nodes
